@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.responses import HTMLResponse
 
 app = FastAPI(
@@ -13,6 +13,7 @@ app = FastAPI(
 class Tags(Enum):
     movies = "Get Movies"
     movieId = "Get Movie by ID"
+    moviesCreate = "Create Movie"
 
 
 movies = [
@@ -37,6 +38,7 @@ def read_root():
 def get_movies():
     return movies
 
+
 @app.get("/movie/{id}", tags=[Tags.movieId])
 def get_movie(id: int):
     for movie in movies:
@@ -44,6 +46,44 @@ def get_movie(id: int):
             return movie
     return []
 
-@app.get("/movies/", tags=[Tags.movies])
-def get_movies_by_category(category:str):
+
+@app.get("/movies/", tags=[Tags.moviesCreate])
+def get_movies_by_category(category: str):
     return category
+
+
+@app.post('/movies', tags=[Tags.moviesCreate])
+def create_movie(id: int = Body(), title: str = Body(), overview: str = Body(), year: int = Body(),
+                 rating: float = Body(), category: str = Body()):
+    movies.append({
+        "id": id,
+        "title": title,
+        "overview": overview,
+        "year": year,
+        "rating": rating,
+        "category": category
+    })
+    return title
+
+
+@app.post("/movies2", tags=["Movies"])
+def create_movie2(
+        id: int,
+        title: str,
+        overview: str,
+        year: int,
+        rating: float,
+        category: str
+):
+    movies.append({
+        "id": id,
+        "title": title,
+        "overview": overview,
+        "year": year,
+        "rating": rating,
+        "category": category
+    })
+    return {
+        "message": f"Película '{title}' creada correctamente.",
+        "movies": movies
+    }
