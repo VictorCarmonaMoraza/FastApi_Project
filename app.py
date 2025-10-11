@@ -12,6 +12,7 @@ app = FastAPI(
 
 class Tags(Enum):
     movies = "Get Movies"
+    movieId = "Get Movie by ID"
 
 
 movies = [
@@ -36,9 +37,13 @@ def read_root():
 def get_movies():
     return movies
 
-@app.get("/movie/{id}", tags=[Tags.movies])
+@app.get("/movie/{id}", tags=[Tags.movieId])
 def get_movie(id: int):
     for movie in movies:
         if movie['id'] == id:
             return movie
     return []
+
+@app.get("/movies/", tags=[Tags.movies])
+def get_movies_by_category(category:str):
+    return category
