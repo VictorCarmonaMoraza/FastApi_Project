@@ -3,6 +3,8 @@ from enum import Enum
 from fastapi import FastAPI, Body
 from fastapi.responses import HTMLResponse
 
+from Movie import Movie
+
 app = FastAPI(
     title="My FastAPI Application",
     description="La API en FastAPI de Víctor",
@@ -53,17 +55,9 @@ def get_movies_by_category(category: str):
 
 
 @app.post('/movies', tags=[Tags.moviesCreate])
-def create_movie(id: int = Body(), title: str = Body(), overview: str = Body(), year: int = Body(),
-                 rating: float = Body(), category: str = Body()):
-    movies.append({
-        "id": id,
-        "title": title,
-        "overview": overview,
-        "year": year,
-        "rating": rating,
-        "category": category
-    })
-    return title
+def create_movie(movie: Movie):
+    movies.append(movie)
+    return movies
 
 
 @app.post("/movies2", tags=["Movies"])
@@ -90,16 +84,15 @@ def create_movie2(
 
 
 @app.put('/movies/{id}', tags=["Movies"])
-def update_movie(id: int, title: str = Body(), overview: str = Body(), year: int = Body(),
-                 rating: float = Body(), category: str = Body()):
-    for movie in movies:
-        if movie['id'] == id:
-            movie['title'] = title
-            movie['overview'] = overview
-            movie['year'] = year
-            movie['rating'] = rating
-            movie['category'] = category
-            return movie
+def update_movie(id: int, movie: Movie):
+    for item in movies:
+        if item['id'] == id:
+            item['title'] = movie.title,
+            item['overview'] = movie.overview,
+            item['year'] = movie.year
+            item['rating'] = movie.rating
+            item['category'] = movie.category,
+            return movies
     return {"message": "Película no encontrada"}
 
 
