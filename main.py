@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 import Movie
 from Movie import Movie
 from User import User
-from jwt_utils import createToken
+from user_jwt import createToken
 
 app = FastAPI(
     title="My FastAPI Application",
@@ -15,13 +15,11 @@ app = FastAPI(
 )
 
 
-
 class Tags(Enum):
     movies = "Get Movies"
     movieId = "Get Movie by ID"
     moviesCreate = "Create Movie"
     auth = "Authentication"
-
 
 
 movies = [
@@ -35,17 +33,25 @@ movies = [
     }
 ]
 
+
 @app.post('/login', tags=[Tags.auth])
-def login(user:User):
-    return user
+def login(user: User):
+    if user.email == "victor" and user.password == "1234":
+        token: str = createToken(user.model_dump())
+        print(f'token: {token}')
+        return JSONResponse(content={"token": token}, status_code=status.HTTP_200_OK)
+    return JSONResponse(content={"message": "Credenciales inválidas"}, status_code=status.HTTP_401_UNAUTHORIZED)
+
 
 @app.get('/token', tags=[Tags.auth])
-def get_token(email:str=Query(), password:str=Query()):
-    user=User(email=email,password=password)
-    token:str=createToken(user.dict())
-    return JSONResponse(content={"token":token})
+def get_token(email: str = Query(), password: str = Query()):
+    user = User(email=email, password=password)
+    token: str = createToken(user.model_dump())
+    return JSONResponse(content={"token": token})
 
 # @app.get("/", tags=[Tags.items])
+
+
 @app.get("/", tags=['Inicio2'])
 def read_root():
     return HTMLResponse('<h1>Hola Mundo</h1>')
@@ -72,7 +78,7 @@ def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
 @app.post('/movies', tags=[Tags.moviesCreate])
 def create_movie(movie: Movie):
     # Añadimos el modelo convertido a dict (para mantener consistencia)
-    movies.append(movie.dict())
+    movies.append(movie.model_dump())
     return JSONResponse(content={
         "message": "Película agregada correctamente",
         "movies": movies
@@ -101,6 +107,7 @@ def create_movie2(
         "movies": movies
     }
 
+
 @app.put('/movies/{id}', tags=["Movies"])
 def update_movie(id: int, movie: Movie):
     for item in movies:
@@ -127,7 +134,6 @@ def update_movie(id: int, movie: Movie):
         },
         status_code=status.HTTP_404_NOT_FOUND
     )
-
 
 
 @app.delete('/movies/{id}', tags=["Movies"])
