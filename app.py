@@ -1,8 +1,9 @@
 from enum import Enum
 
 from fastapi import FastAPI, Body, Path, Query
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
+import Movie
 from Movie import Movie
 
 app = FastAPI(
@@ -38,7 +39,7 @@ def read_root():
 
 @app.get("/movies", tags=[Tags.movies])
 def get_movies():
-    return movies
+    return JSONResponse(content=movies)
 
 
 @app.get("/movie/{id}", tags=[Tags.movieId])
@@ -56,8 +57,12 @@ def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
 
 @app.post('/movies', tags=[Tags.moviesCreate])
 def create_movie(movie: Movie):
-    movies.append(movie)
-    return movies
+    # Añadimos el modelo convertido a dict (para mantener consistencia)
+    movies.append(movie.dict())
+    return JSONResponse(content={
+        "message": "Película agregada correctamente",
+        "movies": movies
+    })
 
 
 @app.post("/movies2", tags=["Movies"])
@@ -92,8 +97,8 @@ def update_movie(id: int, movie: Movie):
             item['year'] = movie.year
             item['rating'] = movie.rating
             item['category'] = movie.category
-            return movies
-    return {"message": "Película no encontrada"}
+            return JSONResponse(content={'message': 'Se ha actualizado la película correctamente'})
+    return JSONResponse(content={"message": "Película no encontrada"})
 
 
 @app.delete('/movies/{id}', tags=["Movies"])
@@ -101,5 +106,5 @@ def delete_movie(id: int):
     for item in movies:
         if item['id'] == id:
             movies.remove(item)
-            return {"message": "Película eliminada correctamente"}
-    return {"message": "Película no encontrada"}
+            return JSONResponse(content={"message": "Película eliminada correctamente"})
+    return JSONResponse(content={"message": "Película no encontrada"})

@@ -10,3 +10,15 @@ class Movie(BaseModel):
     year: int = Field(default=2023)
     rating: float = Field(ge=1, le=10)
     category: str = Field(default='Aqui va la categoria', min_length=3, max_length=15)
+
+
+## Serialize to dictionary
+def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "overview": self.overview,
+            "year": self.year,
+            "rating": self.rating,
+            "category": self.category
+        }
