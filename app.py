@@ -39,6 +39,12 @@ movies = [
 def login(user:User):
     return user
 
+@app.get('/token', tags=[Tags.auth])
+def get_token(email:str=Query(), password:str=Query()):
+    user=User(email=email,password=password)
+    token:str=createToken(user.dict())
+    return JSONResponse(content={"token":token})
+
 # @app.get("/", tags=[Tags.items])
 @app.get("/", tags=['Inicio2'])
 def read_root():
