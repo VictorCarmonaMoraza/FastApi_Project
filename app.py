@@ -5,6 +5,8 @@ from fastapi.responses import HTMLResponse, JSONResponse
 
 import Movie
 from Movie import Movie
+from User import User
+from jwt_utils import createToken
 
 app = FastAPI(
     title="My FastAPI Application",
@@ -13,10 +15,13 @@ app = FastAPI(
 )
 
 
+
 class Tags(Enum):
     movies = "Get Movies"
     movieId = "Get Movie by ID"
     moviesCreate = "Create Movie"
+    auth = "Authentication"
+
 
 
 movies = [
@@ -30,6 +35,9 @@ movies = [
     }
 ]
 
+@app.post('/login', tags=[Tags.auth])
+def login(user:User):
+    return user
 
 # @app.get("/", tags=[Tags.items])
 @app.get("/", tags=['Inicio2'])
