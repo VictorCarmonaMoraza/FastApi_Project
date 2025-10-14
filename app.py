@@ -87,11 +87,11 @@ def create_movie2(
 def update_movie(id: int, movie: Movie):
     for item in movies:
         if item['id'] == id:
-            item['title'] = movie.title,
-            item['overview'] = movie.overview,
+            item['title'] = movie.title
+            item['overview'] = movie.overview
             item['year'] = movie.year
             item['rating'] = movie.rating
-            item['category'] = movie.category,
+            item['category'] = movie.category
             return movies
     return {"message": "Película no encontrada"}
 
