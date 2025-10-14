@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fastapi import FastAPI, Body, Path, Query
+from fastapi import FastAPI, Body, Path, Query, status
 from fastapi.responses import HTMLResponse, JSONResponse
 
 import Movie
@@ -87,7 +87,6 @@ def create_movie2(
         "movies": movies
     }
 
-
 @app.put('/movies/{id}', tags=["Movies"])
 def update_movie(id: int, movie: Movie):
     for item in movies:
@@ -97,8 +96,24 @@ def update_movie(id: int, movie: Movie):
             item['year'] = movie.year
             item['rating'] = movie.rating
             item['category'] = movie.category
-            return JSONResponse(content={'message': 'Se ha actualizado la película correctamente'})
-    return JSONResponse(content={"message": "Película no encontrada"})
+
+            return JSONResponse(
+                content={
+                    "message": "Se ha actualizado la película correctamente",
+                    "status": status.HTTP_200_OK,
+                    "updated_movie": item  # 👈 opcional, muestra también la película
+                },
+                status_code=status.HTTP_200_OK
+            )
+
+    return JSONResponse(
+        content={
+            "message": "Película no encontrada",
+            "status": status.HTTP_404_NOT_FOUND
+        },
+        status_code=status.HTTP_404_NOT_FOUND
+    )
+
 
 
 @app.delete('/movies/{id}', tags=["Movies"])
