@@ -7,13 +7,18 @@ import Movie
 from Movie import Movie
 from User import User
 from bearer_jwt import BearerJWT
+from pydantic import BaseModel
 from user_jwt import createToken
+from bd.database import engine, Base
+from models.movie import Movie
 
 app = FastAPI(
     title="My FastAPI Application",
     description="La API en FastAPI de Víctor",
     version='20.32.65'
 )
+
+Base.metadata.create_all(bind=engine)
 
 
 class Tags(Enum):
@@ -71,12 +76,12 @@ def get_movie(id: int = Path(ge=1, le=100)):
     return []
 
 
-@app.get("/movies/", tags=[Tags.moviesCreate])
+@app.get("/movies/", tags=[Tags.movies])
 def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
     return category
 
 
-@app.post('/movies', tags=[Tags.moviesCreate])
+@app.post('/movies', tags=[Tags.movies])
 def create_movie(movie: Movie):
     # Añadimos el modelo convertido a dict (para mantener consistencia)
     movies.append(movie.model_dump())
