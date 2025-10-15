@@ -135,22 +135,33 @@ def create_movie2(
 
 @app.put('/movies/{id}', tags=["Movies"])
 def update_movie(id: int, movie: Movie):
-    for item in movies:
-        if item['id'] == id:
-            item['title'] = movie.title
-            item['overview'] = movie.overview
-            item['year'] = movie.year
-            item['rating'] = movie.rating
-            item['category'] = movie.category
-
-            return JSONResponse(
-                content={
-                    "message": "Se ha actualizado la película correctamente",
-                    "status": status.HTTP_200_OK,
-                    "updated_movie": item  # 👈 opcional, muestra también la película
-                },
-                status_code=status.HTTP_200_OK
-            )
+    db = Session()
+    data = db.query(ModelMovie).filter(ModelMovie.id == id).first()
+    if not data:
+        return JSONResponse(content={"message": "No se ha encontrado la película"},
+                            status_code=status.HTTP_404_NOT_FOUND)
+    # Actulizar pelicula
+    data.title = movie.title
+    data.overview = movie.overview
+    data.year = movie.year
+    data.rating = movie.rating
+    data.category = movie.category
+    db.commit()
+    db.refresh(data)
+    return JSONResponse(
+        content={
+            "message": "Película actualizada correctamente",
+            "movie": {
+                "id": data.id,
+                "title": data.title,
+                "overview": data.overview,
+                "year": data.year,
+                "rating": data.rating,
+                "category": data.category
+            }
+        },
+        status_code=status.HTTP_200_OK
+    )
 
     return JSONResponse(
         content={
