@@ -4,9 +4,9 @@ from fastapi import Depends, FastAPI, Body, Path, Query, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
-import Movie
-from Movie import Movie
-from User import User
+import movieclass
+from movieclass import Movie
+from userclass import User
 from bearer_jwt import BearerJWT
 from pydantic import BaseModel
 from user_jwt import createToken
@@ -29,16 +29,16 @@ class Tags(Enum):
     auth = "Authentication"
 
 
-movies = [
-    {
-        'id': 1,
-        'title': 'El Padrino',
-        'overview': "El Padrino es una película de 1972 dirigida por Francis Ford Coppola ...",
-        'year': '1972',
-        'rating': 9.2,
-        'category': 'Crimen'
-    }
-]
+# movies = [
+#     {
+#         'id': 1,
+#         'title': 'El Padrino',
+#         'overview': "El Padrino es una película de 1972 dirigida por Francis Ford Coppola ...",
+#         'year': '1972',
+#         'rating': 9.2,
+#         'category': 'Crimen'
+#     }
+# ]
 
 
 @app.post('/login', tags=[Tags.auth])
@@ -84,7 +84,13 @@ def get_movie(id: int = Path(ge=1, le=100)):
 
 @app.get("/movies/", tags=[Tags.movies])
 def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
-    return category
+    db = Session()
+    category = db.query(ModelMovie).filter(
+        ModelMovie.category == category).all()
+    if not category:
+        return JSONResponse(content={"message": "No se han encontrado películas en esa categoría"},
+                            status_code=status.HTTP_404_NOT_FOUND)
+    return JSONResponse(content=jsonable_encoder(category), status_code=status.HTTP_200_OK)
 
 
 @app.post("/movies", tags=[Tags.movies])
