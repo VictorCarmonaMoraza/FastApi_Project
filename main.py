@@ -1,6 +1,7 @@
 from enum import Enum
 
 from fastapi import Depends, FastAPI, Body, Path, Query, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse
 
 import Movie
@@ -65,15 +66,20 @@ def read_root():
 
 @app.get("/movies", tags=[Tags.movies], dependencies=[Depends(BearerJWT())])
 def get_movies():
-    return JSONResponse(content=movies)
+    db = Session()
+    movies = db.query(ModelMovie).all()
+
+    return JSONResponse(content=jsonable_encoder(movies), status_code=status.HTTP_200_OK)
 
 
 @app.get("/movie/{id}", tags=[Tags.movieId], status_code=status.HTTP_200_OK)
 def get_movie(id: int = Path(ge=1, le=100)):
-    for movie in movies:
-        if movie['id'] == id:
-            return movie
-    return []
+    db = Session()
+    data = db.query(ModelMovie).filter(ModelMovie.id == id).first()
+    if not data:
+        return JSONResponse(content={"message": "No se ha encontrado la película"},
+                            status_code=status.HTTP_404_NOT_FOUND)
+    return JSONResponse(content=jsonable_encoder(data), status_code=status.HTTP_200_OK)
 
 
 @app.get("/movies/", tags=[Tags.movies])
