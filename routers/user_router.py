@@ -1,10 +1,12 @@
 
-
-from fastapi import APIRouter, Query, status
-from fastapi.responses import JSONResponse
-from user_jwt import createToken
-from userclass import User
 from utils.tags import Tags
+from userclass import User
+from user_jwt import createToken
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Query, status
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
 routerUser = APIRouter()
