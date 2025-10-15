@@ -6,17 +6,12 @@
       "type": "python",
       "request": "launch",
       "module": "uvicorn",
-      "args": [
-        "main:app", // <--- Cambia 'main' si tu archivo tiene otro nombre
-        "--reload",
-        "--port",
-        "8009"
-      ],
+      "args": ["main:app", "--reload", "--port", "8009"],
       "jinja": true,
       "env": {
         "PYTHONPATH": "${workspaceFolder}"
       },
-      "cwd": "${workspaceFolder}", // 👈 ESTA LÍNEA ES CLAVE
+      "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
     }
   ]
