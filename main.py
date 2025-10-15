@@ -1,6 +1,7 @@
 
 import os
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 import uvicorn
 
 from bd.database import engine, Base

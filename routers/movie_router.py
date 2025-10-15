@@ -3,11 +3,12 @@ from fastapi import APIRouter, Depends, Path, Query, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from main import Tags
+
 from movieclass import Movie
 from bearer_jwt import BearerJWT
 from bd.database import Session
 from models.movie import Movie as ModelMovie
+from utils.tags import Tags
 
 routerMovie = APIRouter()
 
