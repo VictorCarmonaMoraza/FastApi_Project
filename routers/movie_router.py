@@ -1,3 +1,4 @@
+from pathfix import *
 from utils.tags import Tags
 from models.movie import Movie as ModelMovie
 from bd.database import Session
@@ -6,9 +7,6 @@ from movieclass import Movie
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter, Depends, Path, Query, status
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
 routerMovie = APIRouter()

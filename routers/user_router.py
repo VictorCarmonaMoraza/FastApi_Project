@@ -1,12 +1,10 @@
 
+from pathfix import *
 from utils.tags import Tags
 from userclass import User
 from user_jwt import createToken
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Query, status
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 
 routerUser = APIRouter()

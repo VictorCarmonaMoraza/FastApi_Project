@@ -1,3 +1,6 @@
+
+
+from pathfix import *
 from routers.user_router import routerUser
 from routers.movie_router import routerMovie
 from bd.database import engine, Base
