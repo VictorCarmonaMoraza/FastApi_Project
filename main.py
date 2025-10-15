@@ -1,11 +1,12 @@
 from enum import Enum
 
-from fastapi import FastAPI, Body, Path, Query, status
+from fastapi import Depends, FastAPI, Body, Path, Query, status
 from fastapi.responses import HTMLResponse, JSONResponse
 
 import Movie
 from Movie import Movie
 from User import User
+from bearer_jwt import BearerJWT
 from user_jwt import createToken
 
 app = FastAPI(
@@ -57,12 +58,12 @@ def read_root():
     return HTMLResponse('<h1>Hola Mundo</h1>')
 
 
-@app.get("/movies", tags=[Tags.movies])
+@app.get("/movies", tags=[Tags.movies], dependencies=[Depends(BearerJWT())])
 def get_movies():
     return JSONResponse(content=movies)
 
 
-@app.get("/movie/{id}", tags=[Tags.movieId])
+@app.get("/movie/{id}", tags=[Tags.movieId], status_code=status.HTTP_200_OK)
 def get_movie(id: int = Path(ge=1, le=100)):
     for movie in movies:
         if movie['id'] == id:
