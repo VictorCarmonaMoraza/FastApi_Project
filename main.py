@@ -9,8 +9,8 @@ from User import User
 from bearer_jwt import BearerJWT
 from pydantic import BaseModel
 from user_jwt import createToken
-from bd.database import engine, Base
-from models.movie import Movie
+from bd.database import Session, engine, Base
+from models.movie import Movie as ModelMovie
 
 app = FastAPI(
     title="My FastAPI Application",
@@ -81,13 +81,26 @@ def get_movies_by_category(category: str = Query(min_length=5, max_length=15)):
     return category
 
 
-@app.post('/movies', tags=[Tags.movies])
+@app.post("/movies", tags=[Tags.movies])
 def create_movie(movie: Movie):
-    # Añadimos el modelo convertido a dict (para mantener consistencia)
-    movies.append(movie.model_dump())
+    db = Session()
+    newMovie = ModelMovie(**movie.model_dump())
+    db.add(newMovie)
+    db.commit()
+    db.refresh(newMovie)
+
+    movie_dict = {
+        "id": newMovie.id,
+        "title": newMovie.title,
+        "overview": newMovie.overview,
+        "year": newMovie.year,
+        "rating": newMovie.rating,
+        "category": newMovie.category
+    }
+
     return JSONResponse(content={
         "message": "Película agregada correctamente",
-        "movies": movies
+        "movie": movie_dict
     })
 
 
